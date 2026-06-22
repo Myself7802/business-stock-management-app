@@ -82,21 +82,31 @@ Or open `dist/index.html` after build — for best results use `npm run preview`
 
 All data is saved in the browser **localStorage** on this PC. Use **Backup** regularly.
 
-## Push to GitHub
+## Push to GitHub (myself7802)
 
-1. Install [Git](https://git-scm.com/download/win) and sign in to GitHub
-2. In this folder:
+Remote is already set to: **https://github.com/myself7802/stockdesk**
+
+### Step 1 — Create empty repo on GitHub (one time)
+
+1. Open [github.com/new](https://github.com/new)
+2. **Repository name:** `stockdesk`
+3. **Public**
+4. **Do not** add README, .gitignore, or license (this project already has them)
+5. Click **Create repository**
+
+### Step 2 — Push from your PC
+
+Double-click **`push-to-github.bat`**
+
+Or in terminal:
 
 ```bash
-git init
-git add .
-git commit -m "Initial commit: StockDesk business manager"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/stockdesk.git
 git push -u origin main
 ```
 
-Replace `YOUR_USERNAME/stockdesk` with your repo URL.
+Sign in when GitHub asks (browser or token). After success:
+
+**https://github.com/myself7802/stockdesk**
 
 ## License
 
