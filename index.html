@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StockDesk — Business Manager</title>
+    <link rel="stylesheet" href="/src/styles/main.css" />
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <div class="logo">S</div>
+        <div>
+          <h1>StockDesk</h1>
+          <p>Business &amp; inventory manager</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="backup-status" id="backupStatus">No backup yet</div>
+        <button class="btn-ghost btn-sm" id="exportBtn" type="button">Backup</button>
+        <button class="btn-ghost btn-sm" id="importBtn" type="button">Restore</button>
+        <input type="file" id="importFile" accept="application/json,.json" hidden />
+      </div>
+    </header>
+
+    <nav id="mainNav">
+      <button class="nav-btn active" data-page="home" type="button">Home</button>
+      <button class="nav-btn" data-page="sales" type="button">Sales</button>
+      <button class="nav-btn" data-page="purchases" type="button">Purchases</button>
+      <button class="nav-btn" data-page="expenses" type="button">Expenses</button>
+      <button class="nav-btn" data-page="payments" type="button">Payments</button>
+      <button class="nav-btn" data-page="parties" type="button">Parties</button>
+      <button class="nav-btn" data-page="products" type="button">Products</button>
+      <button class="nav-btn" data-page="reports" type="button">Reports</button>
+      <button class="nav-btn" data-page="trash" type="button">Trash</button>
+    </nav>
+
+    <div class="wrap">
+      <div class="view active" id="view-home">
+        <div class="quick-actions">
+          <button class="qa-btn sale" data-action="new-sale" type="button">+ Sale</button>
+          <button class="qa-btn purchase" data-action="new-purchase" type="button">+ Purchase</button>
+          <button class="qa-btn expense" data-action="new-expense" type="button">+ Expense</button>
+        </div>
+        <div class="stats">
+          <div class="stat"><div class="label">Today's Sales</div><div class="value" id="homeTodaySales">₹0</div></div>
+          <div class="stat"><div class="label">Stock Value</div><div class="value" id="homeStockValue">₹0</div></div>
+          <div class="stat"><div class="label">Receivable</div><div class="value" id="homeReceivable">₹0</div></div>
+          <div class="stat"><div class="label">Profit This Month</div><div class="value" id="homeProfit">₹0</div></div>
+        </div>
+      </div>
+
+      <div class="view" id="view-sales">
+        <div class="toolbar">
+          <div class="date-filter"><label>From</label><input type="date" id="salesFrom" /><label>To</label><input type="date" id="salesTo" /></div>
+          <button class="btn-primary" data-action="new-sale" type="button">+ New Sale</button>
+        </div>
+        <div class="card"><div class="card-head"><h2>Sales Bills</h2></div><div id="salesList"></div></div>
+      </div>
+
+      <div class="view" id="view-purchases">
+        <div class="toolbar">
+          <div class="date-filter"><label>From</label><input type="date" id="purchFrom" /><label>To</label><input type="date" id="purchTo" /></div>
+          <button class="btn-primary" data-action="new-purchase" type="button">+ New Purchase</button>
+        </div>
+        <div class="card"><div class="card-head"><h2>Purchase Bills</h2></div><div id="purchList"></div></div>
+      </div>
+
+      <div class="view" id="view-expenses">
+        <div class="toolbar">
+          <div class="date-filter"><label>From</label><input type="date" id="expFrom" /><label>To</label><input type="date" id="expTo" /></div>
+          <button class="btn-primary" data-action="new-expense" type="button">+ Add Expense</button>
+        </div>
+        <div class="card"><div class="card-head"><h2>Expenses</h2></div><div id="expList"></div></div>
+      </div>
+
+      <div class="view" id="view-payments">
+        <div class="toolbar">
+          <div class="date-filter"><label>From</label><input type="date" id="payFrom" /><label>To</label><input type="date" id="payTo" /></div>
+          <button class="btn-green btn-sm" data-action="payment-in" type="button">Payment In</button>
+          <button class="btn-red btn-sm" data-action="payment-out" type="button">Payment Out</button>
+        </div>
+        <div class="card"><div class="card-head"><h2>Payments</h2></div><div id="payList"></div></div>
+      </div>
+
+      <div class="view" id="view-parties">
+        <div class="toolbar"><button class="btn-primary" data-action="new-party" type="button">+ Add Party</button></div>
+        <div class="card"><div class="card-head"><h2>Customers &amp; Suppliers</h2></div><div id="partyList"></div></div>
+      </div>
+
+      <div class="view" id="view-products">
+        <div class="toolbar">
+          <div class="grow"><input id="prodSearch" placeholder="Search products..." /></div>
+          <select id="prodFilter" style="width: auto"><option value="all">All</option><option value="low">Low stock</option><option value="out">Out of stock</option></select>
+          <button class="btn-ghost btn-sm" id="csvBtn" type="button">Export CSV</button>
+          <button class="btn-primary" data-action="new-product" type="button">+ Add Product</button>
+        </div>
+        <div class="card"><div class="card-head"><h2>Products</h2><span class="muted" id="prodCount"></span></div><div id="prodList"></div></div>
+      </div>
+
+      <div class="view" id="view-reports">
+        <div class="report-tabs">
+          <div class="report-tab active" data-report="pl">Profit / Loss</div>
+          <div class="report-tab" data-report="party">Party Statement</div>
+        </div>
+        <div class="toolbar date-filter">
+          <label>From</label><input type="date" id="repFrom" /><label>To</label><input type="date" id="repTo" />
+          <button class="btn-ghost btn-sm" data-action="apply-report" type="button">Apply</button>
+        </div>
+        <div id="reportPL"></div>
+        <div id="reportParty" hidden>
+          <div class="toolbar">
+            <select id="stmtParty" style="width: auto; min-width: 200px"></select>
+            <button class="btn-ghost btn-sm" data-action="export-statement-csv" type="button">Excel (CSV)</button>
+            <button class="btn-ghost btn-sm" data-action="print-statement" type="button">PDF (Print)</button>
+          </div>
+          <div class="card"><div id="stmtContent"></div></div>
+        </div>
+      </div>
+
+      <div class="view" id="view-trash">
+        <div class="card"><div class="card-head"><h2>Deleted Items — Restore here</h2></div><div id="trashList"></div></div>
+      </div>
+    </div>
+
+    <!-- Product modal -->
+    <div class="overlay" id="productOverlay">
+      <div class="modal">
+        <div class="modal-head"><h3 id="productModalTitle">Add Product</h3><button class="close-x" data-close type="button">&times;</button></div>
+        <div class="modal-body">
+          <input type="hidden" id="productId" />
+          <div class="field"><label>Product Name *</label><input id="pName" /></div>
+          <div class="row2">
+            <div class="field"><label>Category</label><input id="pCategory" /></div>
+            <div class="field"><label>SKU / Code</label><input id="pSku" /></div>
+          </div>
+          <div class="row2">
+            <div class="field"><label>Purchase Price (₹) *</label><input id="pCost" type="number" min="0" step="0.01" /></div>
+            <div class="field"><label>Selling Price (₹) *</label><input id="pSale" type="number" min="0" step="0.01" /></div>
+          </div>
+          <div class="row2">
+            <div class="field"><label>Quantity in Stock *</label><input id="pQty" type="number" min="0" step="1" /></div>
+            <div class="field"><label>Low Stock Alert</label><input id="pThreshold" type="number" min="0" value="5" /></div>
+          </div>
+        </div>
+        <div class="modal-foot"><button class="btn-ghost" data-close type="button">Cancel</button><button class="btn-primary" id="saveProductBtn" type="button">Save</button></div>
+      </div>
+    </div>
+
+    <!-- Party modal -->
+    <div class="overlay" id="partyOverlay">
+      <div class="modal">
+        <div class="modal-head"><h3 id="partyModalTitle">Add Party</h3><button class="close-x" data-close type="button">&times;</button></div>
+        <div class="modal-body">
+          <input type="hidden" id="partyId" />
+          <div class="field"><label>Name *</label><input id="partyName" /></div>
+          <div class="row2">
+            <div class="field"><label>Type *</label><select id="partyType"><option value="customer">Customer</option><option value="supplier">Supplier</option></select></div>
+            <div class="field"><label>Phone</label><input id="partyPhone" /></div>
+          </div>
+          <div class="field"><label>Address</label><input id="partyAddress" /></div>
+          <div class="field"><label>Opening Balance (₹)</label><input id="partyOpening" type="number" step="0.01" value="0" /><span class="muted" style="font-size: 11px">Positive = they owe you (customer) or you owe them (supplier)</span></div>
+        </div>
+        <div class="modal-foot"><button class="btn-ghost" data-close type="button">Cancel</button><button class="btn-primary" id="savePartyBtn" type="button">Save</button></div>
+      </div>
+    </div>
+
+    <!-- Bill modal -->
+    <div class="overlay" id="billOverlay">
+      <div class="modal lg">
+        <div class="modal-head"><h3 id="billModalTitle">New Sale</h3><button class="close-x" data-close type="button">&times;</button></div>
+        <div class="modal-body">
+          <input type="hidden" id="billType" />
+          <div class="row3">
+            <div class="field"><label>Date</label><input type="date" id="billDate" /></div>
+            <div class="field"><label>Party *</label><select id="billParty"></select></div>
+            <div class="field"><label>Amount Paid (₹)</label><input type="number" id="billPaid" min="0" step="0.01" value="0" /></div>
+          </div>
+          <div class="field autocomplete-wrap">
+            <label>Add Product (type to search)</label>
+            <input id="billProductSearch" placeholder="Type product name..." autocomplete="off" />
+            <div class="ac-list" id="billAcList"></div>
+          </div>
+          <div class="bill-lines">
+            <div class="bill-line head"><span>Product</span><span>Purchase ₹</span><span>Sale ₹</span><span>Qty</span><span>Total</span><span></span></div>
+            <div id="billLines"></div>
+          </div>
+          <div class="bill-total">Total: <span id="billTotal">₹0</span></div>
+          <div class="field"><label>Note</label><input id="billNote" /></div>
+        </div>
+        <div class="modal-foot"><button class="btn-ghost" data-close type="button">Cancel</button><button class="btn-primary" id="saveBillBtn" type="button">Save Bill</button></div>
+      </div>
+    </div>
+
+    <!-- Expense modal -->
+    <div class="overlay" id="expenseOverlay">
+      <div class="modal">
+        <div class="modal-head"><h3>Add Expense</h3><button class="close-x" data-close type="button">&times;</button></div>
+        <div class="modal-body">
+          <div class="row2">
+            <div class="field"><label>Date</label><input type="date" id="expDate" /></div>
+            <div class="field"><label>Amount (₹) *</label><input type="number" id="expAmount" min="0" step="0.01" /></div>
+          </div>
+          <div class="field"><label>Category</label><input id="expCategory" placeholder="Rent, Salary, Transport..." /></div>
+          <div class="field"><label>Note</label><input id="expNote" /></div>
+        </div>
+        <div class="modal-foot"><button class="btn-ghost" data-close type="button">Cancel</button><button class="btn-primary" id="saveExpenseBtn" type="button">Save</button></div>
+      </div>
+    </div>
+
+    <!-- Payment modal -->
+    <div class="overlay" id="paymentOverlay">
+      <div class="modal">
+        <div class="modal-head"><h3 id="payModalTitle">Payment In</h3><button class="close-x" data-close type="button">&times;</button></div>
+        <div class="modal-body">
+          <input type="hidden" id="payType" />
+          <div class="row2">
+            <div class="field"><label>Date</label><input type="date" id="payDate" /></div>
+            <div class="field"><label>Amount (₹) *</label><input type="number" id="payAmount" min="0" step="0.01" /></div>
+          </div>
+          <div class="row2">
+            <div class="field"><label>Party *</label><select id="payParty"></select></div>
+            <div class="field"><label>Mode</label><select id="payMode"><option>Cash</option><option>UPI</option><option>Bank</option><option>Cheque</option></select></div>
+          </div>
+          <div class="field"><label>Note</label><input id="payNote" /></div>
+        </div>
+        <div class="modal-foot"><button class="btn-ghost" data-close type="button">Cancel</button><button class="btn-primary" id="savePaymentBtn" type="button">Save</button></div>
+      </div>
+    </div>
+
+    <!-- Import modal -->
+    <div class="overlay" id="importOverlay">
+      <div class="modal">
+        <div class="modal-head"><h3>Restore Backup</h3><button class="close-x" data-close type="button">&times;</button></div>
+        <div class="modal-body">
+          <div class="import-summary" id="importSummary"></div>
+          <div class="choice-row">
+            <div class="choice" id="choiceReplace"><h4>Replace all</h4><p>Use backup exactly.</p></div>
+            <div class="choice" id="choiceMerge"><h4>Merge</h4><p>Add new records only.</p></div>
+          </div>
+        </div>
+        <div class="modal-foot"><button class="btn-ghost" data-close type="button">Cancel</button></div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+    <div id="printArea"></div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
