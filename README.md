@@ -84,29 +84,26 @@ All data is saved in the browser **localStorage** on this PC. Use **Backup** reg
 
 ## Push to GitHub (myself7802)
 
-Remote is already set to: **https://github.com/myself7802/stockdesk**
+Remote: **https://github.com/myself7802/business-stock-management-app**
 
-### Step 1 — Create empty repo on GitHub (one time)
+### Step 1 — Create empty repo (one time)
 
-1. Open [github.com/new](https://github.com/new)
-2. **Repository name:** `stockdesk`
-3. **Public**
-4. **Do not** add README, .gitignore, or license (this project already has them)
-5. Click **Create repository**
+Open: [Create business-stock-management-app](https://github.com/new?name=business-stock-management-app)
 
-### Step 2 — Push from your PC
+- **Public**
+- **Do not** add README, .gitignore, or license
 
-Double-click **`push-to-github.bat`**
+Click **Create repository**.
 
-Or in terminal:
+### Step 2 — Push
+
+Double-click **`push-to-github.bat`** or run:
 
 ```bash
 git push -u origin main
 ```
 
-Sign in when GitHub asks (browser or token). After success:
-
-**https://github.com/myself7802/stockdesk**
+Live URL: **https://github.com/myself7802/business-stock-management-app**
 
 ## License
 
