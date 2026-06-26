@@ -18,6 +18,7 @@
       <div class="header-actions">
         <div class="backup-status" id="backupStatus">No backup yet</div>
         <button class="btn-ghost btn-sm" id="exportBtn" type="button">Backup</button>
+        <button class="btn-ghost btn-sm" id="manageBackupsBtn" type="button">Backup Manager</button>
         <button class="btn-ghost btn-sm" id="importBtn" type="button">Restore</button>
         <input type="file" id="importFile" accept="application/json,.json" hidden />
       </div>
@@ -55,7 +56,7 @@
           <div class="date-filter"><label>From</label><input type="date" id="salesFrom" /><label>To</label><input type="date" id="salesTo" /></div>
           <button class="btn-primary" data-action="new-sale" type="button">+ New Sale</button>
         </div>
-        <div class="card"><div class="card-head"><h2>Sales Bills</h2></div><div id="salesList"></div></div>
+        <div class="card"><div class="card-head"><h2>Sales Bills</h2><span class="muted card-hint">Double-click a row for details</span></div><div id="salesList"></div></div>
       </div>
 
       <div class="view" id="view-purchases">
@@ -63,7 +64,7 @@
           <div class="date-filter"><label>From</label><input type="date" id="purchFrom" /><label>To</label><input type="date" id="purchTo" /></div>
           <button class="btn-primary" data-action="new-purchase" type="button">+ New Purchase</button>
         </div>
-        <div class="card"><div class="card-head"><h2>Purchase Bills</h2></div><div id="purchList"></div></div>
+        <div class="card"><div class="card-head"><h2>Purchase Bills</h2><span class="muted card-hint">Double-click a row for details</span></div><div id="purchList"></div></div>
       </div>
 
       <div class="view" id="view-expenses">
@@ -84,18 +85,84 @@
       </div>
 
       <div class="view" id="view-parties">
-        <div class="toolbar"><button class="btn-primary" data-action="new-party" type="button">+ Add Party</button></div>
-        <div class="card"><div class="card-head"><h2>Customers &amp; Suppliers</h2></div><div id="partyList"></div></div>
+        <div class="parties-page">
+          <div class="products-topbar">
+            <div class="products-tabs">
+              <span class="products-tab active">Parties</span>
+            </div>
+            <div class="legend-row">
+              <span class="legend-item"><span class="legend-dot receive"></span> Receivable / Paid</span>
+              <span class="legend-item"><span class="legend-dot payable"></span> Payable / Pending</span>
+            </div>
+          </div>
+          <div class="products-layout parties-layout">
+            <div class="products-list-panel card">
+              <div class="products-list-toolbar">
+                <input id="partySearch" type="search" placeholder="Search party..." />
+                <button class="btn-primary btn-sm products-add-btn" data-action="new-party" type="button">+ Add Party</button>
+              </div>
+              <div class="products-list-filter">
+                <select id="partyFilter">
+                  <option value="all">All</option>
+                  <option value="customer">Customers</option>
+                  <option value="supplier">Suppliers</option>
+                </select>
+                <span class="muted" id="partyCount"></span>
+              </div>
+              <div class="products-list-head parties-list-head">
+                <span>Party</span>
+                <span>Balance</span>
+              </div>
+              <div class="products-list-body" id="partySidebarList"></div>
+            </div>
+            <div class="products-detail-panel card" id="partyDetail">
+              <div class="products-empty-state">
+                <div class="products-empty-icon" aria-hidden="true"></div>
+                <p>Select a party to view balance and full transaction history.</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="view" id="view-products">
-        <div class="toolbar">
-          <div class="grow"><input id="prodSearch" placeholder="Search products..." /></div>
-          <select id="prodFilter" style="width: auto"><option value="all">All</option><option value="low">Low stock</option><option value="out">Out of stock</option></select>
-          <button class="btn-ghost btn-sm" id="csvBtn" type="button">Export CSV</button>
-          <button class="btn-primary" data-action="new-product" type="button">+ Add Product</button>
+        <div class="products-page">
+          <div class="products-topbar">
+            <div class="products-tabs">
+              <span class="products-tab active">Products</span>
+            </div>
+            <div class="products-topbar-actions">
+              <button class="btn-ghost btn-sm" id="csvBtn" type="button">Export CSV</button>
+            </div>
+          </div>
+          <div class="products-layout">
+            <div class="products-list-panel card">
+              <div class="products-list-toolbar">
+                <input id="prodSearch" type="search" placeholder="Search items..." />
+                <button class="btn-primary btn-sm products-add-btn" data-action="new-product" type="button">+ Add Item</button>
+              </div>
+              <div class="products-list-filter">
+                <select id="prodFilter">
+                  <option value="all">All items</option>
+                  <option value="low">Low stock</option>
+                  <option value="out">Out of stock</option>
+                </select>
+                <span class="muted" id="prodCount"></span>
+              </div>
+              <div class="products-list-head">
+                <span>Item</span>
+                <span>Quantity</span>
+              </div>
+              <div class="products-list-body" id="prodSidebarList"></div>
+            </div>
+            <div class="products-detail-panel card" id="prodDetail">
+              <div class="products-empty-state">
+                <div class="products-empty-icon" aria-hidden="true"></div>
+                <p>Select an item from the list to view stock and transaction history.</p>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="card"><div class="card-head"><h2>Products</h2><span class="muted" id="prodCount"></span></div><div id="prodList"></div></div>
       </div>
 
       <div class="view" id="view-reports">
@@ -149,54 +216,140 @@
 
     <!-- Party modal -->
     <div class="overlay" id="partyOverlay">
-      <div class="modal">
+      <div class="modal lg">
         <div class="modal-head"><h3 id="partyModalTitle">Add Party</h3><button class="close-x" data-close type="button">&times;</button></div>
         <div class="modal-body">
           <input type="hidden" id="partyId" />
-          <div class="field"><label>Name *</label><input id="partyName" /></div>
+          <div id="partyBalancePreview" class="party-balance-preview" hidden></div>
+          <div class="field"><label>Party Name *</label><input id="partyName" placeholder="Business or person name" /></div>
           <div class="row2">
-            <div class="field"><label>Type *</label><select id="partyType"><option value="customer">Customer</option><option value="supplier">Supplier</option></select></div>
-            <div class="field"><label>Phone</label><input id="partyPhone" /></div>
+            <div class="field">
+              <label>Type *</label>
+              <select id="partyType">
+                <option value="customer">Customer (they buy from you)</option>
+                <option value="supplier">Supplier (you buy from them)</option>
+              </select>
+            </div>
+            <div class="field"><label>Phone</label><input id="partyPhone" placeholder="Mobile number" /></div>
           </div>
-          <div class="field"><label>Address</label><input id="partyAddress" /></div>
-          <div class="field"><label>Opening Balance (₹)</label><input id="partyOpening" type="number" step="0.01" value="0" /><span class="muted" style="font-size: 11px">Positive = they owe you (customer) or you owe them (supplier)</span></div>
+          <div class="field"><label>Address</label><textarea id="partyAddress" rows="2" placeholder="Shop address, city..."></textarea></div>
+          <div class="field">
+            <label>Opening Balance (₹)</label>
+            <input id="partyOpening" type="number" step="0.01" value="0" />
+            <p class="field-hint" id="partyOpeningHint">Customer: positive = they owe you. Supplier: positive = you owe them.</p>
+            <p class="field-hint muted">Only for balance when you first add this party — not for recording payments later.</p>
+          </div>
+          <div id="partyPaymentCallout" class="party-payment-callout" hidden>
+            <p><b>Want to reduce balance?</b> Record a payment here — do not change Opening Balance.</p>
+            <button type="button" class="btn-red btn-sm" data-action="party-record-payment">Pay Supplier</button>
+          </div>
         </div>
-        <div class="modal-foot"><button class="btn-ghost" data-close type="button">Cancel</button><button class="btn-primary" id="savePartyBtn" type="button">Save</button></div>
+        <div class="modal-foot"><button class="btn-ghost" data-close type="button">Cancel</button><button class="btn-primary" id="savePartyBtn" type="button">Save Party</button></div>
       </div>
     </div>
 
     <!-- Bill modal -->
     <div class="overlay" id="billOverlay">
-      <div class="modal lg">
-        <div class="modal-head"><h3 id="billModalTitle">New Sale</h3><button class="close-x" data-close type="button">&times;</button></div>
-        <div class="modal-body">
-          <input type="hidden" id="billType" />
-          <div class="row3">
-            <div class="field"><label>Date</label><input type="date" id="billDate" /></div>
-            <div class="field"><label>Party *</label><select id="billParty"></select></div>
-            <div class="field"><label>Amount Paid (₹)</label><input type="number" id="billPaid" min="0" step="0.01" value="0" /></div>
+      <div class="modal xl">
+        <div class="modal-head bill-modal-head">
+          <div>
+            <h3 id="billModalTitle">New Sale</h3>
+            <div class="bill-no-line">Bill #<span id="billNoPreview">1</span></div>
           </div>
-          <div class="field autocomplete-wrap">
-            <label>Add Product (type to search)</label>
-            <input id="billProductSearch" placeholder="Type product name..." autocomplete="off" />
-            <div class="ac-list" id="billAcList"></div>
+          <div class="pay-mode-toggle">
+            <button type="button" class="pay-mode-btn active" data-action="bill-pay-mode" data-mode="credit"><span id="billCreditLabel">Credit (Pending)</span></button>
+            <button type="button" class="pay-mode-btn" data-action="bill-pay-mode" data-mode="cash"><span id="billCashLabel">Cash (Received)</span></button>
           </div>
-          <div class="bill-lines">
-            <div class="bill-line head"><span>Product</span><span>Purchase ₹</span><span>Sale ₹</span><span>Qty</span><span>Total</span><span></span></div>
-            <div id="billLines"></div>
-          </div>
-          <div class="bill-total">Total: <span id="billTotal">₹0</span></div>
-          <div class="field"><label>Note</label><input id="billNote" /></div>
+          <button class="close-x" data-close type="button">&times;</button>
         </div>
-        <div class="modal-foot"><button class="btn-ghost" data-close type="button">Cancel</button><button class="btn-primary" id="saveBillBtn" type="button">Save Bill</button></div>
+        <div class="modal-body bill-modal-body">
+          <p class="bill-pay-hint muted" id="billPayHint"></p>
+          <input type="hidden" id="billType" />
+          <input type="hidden" id="billPartyId" />
+          <input type="hidden" id="billPayMode" value="credit" />
+
+          <div class="bill-top-grid">
+            <div class="bill-party-block">
+              <div class="field autocomplete-wrap">
+                <label id="billPartyLabel">Customer / Party *</label>
+                <input id="billPartySearch" placeholder="Search by name or phone..." autocomplete="off" />
+                <div class="ac-list ac-table" id="billPartyAcList"></div>
+              </div>
+              <div class="row2">
+                <div class="field"><label>Phone</label><input id="billPartyPhone" readonly placeholder="—" /></div>
+                <div class="field"><label>Balance</label><input id="billPartyBalance" readonly placeholder="—" /></div>
+              </div>
+              <div class="field"><label>Address</label><input id="billPartyAddress" readonly placeholder="—" /></div>
+            </div>
+            <div class="bill-meta-block">
+              <div class="field"><label>Bill Date</label><input type="date" id="billDate" /></div>
+              <div class="field" id="billPaidWrap"><label id="billPaidLabel">Amount Received (₹)</label><input type="number" id="billPaid" min="0" step="0.01" value="0" /></div>
+            </div>
+          </div>
+
+          <div class="field autocomplete-wrap bill-product-search">
+            <label>Add Product — type to search</label>
+            <input id="billProductSearch" placeholder="Search item name, SKU, category..." autocomplete="off" />
+            <div class="ac-list ac-table" id="billAcList"></div>
+          </div>
+
+          <div class="bill-table-wrap card">
+            <table class="bill-items-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Item</th>
+                  <th>Qty</th>
+                  <th id="billPriceColHeader">Sale ₹</th>
+                  <th>Amount</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="billLines"></tbody>
+              <tfoot>
+                <tr class="bill-total-row">
+                  <td colspan="4" style="text-align:right"><b>Total</b></td>
+                  <td colspan="2"><b id="billTotal">₹0</b></td>
+                </tr>
+                <tr id="billDueRow">
+                  <td colspan="4" style="text-align:right" class="muted" id="billDueLabel">Due</td>
+                  <td colspan="2" id="billDue">₹0</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <div class="field"><label>Note</label><input id="billNote" placeholder="Optional note for this bill" /></div>
+        </div>
+        <div class="modal-foot">
+          <button class="btn-ghost" data-close type="button">Cancel</button>
+          <button class="btn-ghost" id="printBillBtn" type="button">Print</button>
+          <button class="btn-primary" id="saveBillBtn" type="button">Save Bill</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bill detail (read-only) -->
+    <div class="overlay" id="billDetailOverlay">
+      <div class="modal lg">
+        <div class="modal-head">
+          <h3 id="billDetailTitle">Bill Details</h3>
+          <button class="close-x" data-close type="button">&times;</button>
+        </div>
+        <div class="modal-body" id="billDetailBody"></div>
+        <div class="modal-foot">
+          <button class="btn-ghost" data-close type="button">Close</button>
+          <button class="btn-primary" id="billDetailPrintBtn" type="button">Print</button>
+        </div>
       </div>
     </div>
 
     <!-- Expense modal -->
     <div class="overlay" id="expenseOverlay">
       <div class="modal">
-        <div class="modal-head"><h3>Add Expense</h3><button class="close-x" data-close type="button">&times;</button></div>
+        <div class="modal-head"><h3 id="expModalTitle">Add Expense</h3><button class="close-x" data-close type="button">&times;</button></div>
         <div class="modal-body">
+          <input type="hidden" id="expId" />
           <div class="row2">
             <div class="field"><label>Date</label><input type="date" id="expDate" /></div>
             <div class="field"><label>Amount (₹) *</label><input type="number" id="expAmount" min="0" step="0.01" /></div>
@@ -213,6 +366,7 @@
       <div class="modal">
         <div class="modal-head"><h3 id="payModalTitle">Payment In</h3><button class="close-x" data-close type="button">&times;</button></div>
         <div class="modal-body">
+          <input type="hidden" id="payId" />
           <input type="hidden" id="payType" />
           <div class="row2">
             <div class="field"><label>Date</label><input type="date" id="payDate" /></div>
@@ -223,6 +377,7 @@
             <div class="field"><label>Mode</label><select id="payMode"><option>Cash</option><option>UPI</option><option>Bank</option><option>Cheque</option></select></div>
           </div>
           <div class="field"><label>Note</label><input id="payNote" /></div>
+          <div id="payBalancePreview" class="party-balance-preview" hidden></div>
         </div>
         <div class="modal-foot"><button class="btn-ghost" data-close type="button">Cancel</button><button class="btn-primary" id="savePaymentBtn" type="button">Save</button></div>
       </div>
@@ -243,9 +398,29 @@
       </div>
     </div>
 
+    <!-- Backup Manager modal -->
+    <div class="overlay" id="backupManagerOverlay">
+      <div class="modal lg">
+        <div class="modal-head"><h3>Backup Manager</h3><button class="close-x" data-close type="button">&times;</button></div>
+        <div class="modal-body">
+          <div class="toolbar">
+            <button class="btn-primary" id="createBackupBtn" type="button">Create Backup Now</button>
+            <span class="muted">Auto backups are also created on every save. These files work well with Google Drive.</span>
+          </div>
+          <div class="card">
+            <div class="card-head"><h2>Available Backups</h2></div>
+            <div id="backupList"></div>
+          </div>
+        </div>
+        <div class="modal-foot"><button class="btn-ghost" data-close type="button">Close</button></div>
+      </div>
+    </div>
+
     <div class="toast" id="toast"></div>
     <div id="printArea"></div>
 
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
+
+

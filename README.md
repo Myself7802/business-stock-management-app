@@ -1,110 +1,126 @@
-# StockDesk — Business & Inventory Manager
+# StockDesk - Business & Inventory Manager
 
-Professional local business app: products, sales, purchases, expenses, payments, parties, reports, and printable bills. Data stays on your PC in the browser.
+Professional local business app: products, sales, purchases, expenses, payments, parties, reports, and printable bills.
+
+## What changed
+
+StockDesk now uses a **real local database file** on your PC instead of browser-only localStorage.
+
+Main database file:
+
+`data/stockdesk-db.json`
+
+Automatic backups folder:
+
+`data/backups/`
+
+This means:
+- party names, sales, products, payments, expenses, and reports are saved in one proper place
+- data stays available across restarts and across days
+- the app is no longer dependent on browser storage behavior
+- a dated backup copy is created automatically whenever data is saved
+
+## Daily use
+
+Double-click **`Open StockDesk.bat`**
+
+It will:
+- start the local StockDesk server
+- open your browser automatically
+- load the app at `http://localhost:3210`
+
+If you created an old desktop shortcut before, delete it and create a **new shortcut** from `Open StockDesk.bat`.
+
+## Google Drive setup (recommended for 2 PCs)
+
+You said you like the Google Drive idea. This is now supported well.
+
+### Best simple setup
+1. Put the full project folder inside your Google Drive folder
+2. Let Google Drive fully sync it
+3. On the second PC, install Google Drive and sync the same folder
+4. Open the app there using `Open StockDesk.bat`
+
+Because the app now uses:
+- `data/stockdesk-db.json`
+- `data/backups/`
+
+both your live data and backups will sync through Google Drive.
+
+### Important rule
+Use **one PC at a time**.
+
+Do not edit data on both PCs at the same time, because Google Drive may create file conflicts if the same database file changes simultaneously.
+
+### Safe workflow
+1. Finish work on PC 1
+2. Wait for Google Drive to sync
+3. Open app on PC 2
+4. If needed, use **Backup Manager** to restore a recent backup
+
+## Backup Manager
+
+The app now has a **Backup Manager** button at the top.
+
+You can:
+- create a manual backup any time
+- see all saved backup files
+- restore a backup directly from the app
+
+### Backup types
+- **Auto backup**: created automatically on every save
+- **Manual backup**: created when you click **Create Backup Now**
+
+## Important files
+
+- `Open StockDesk.bat` - easiest daily launcher
+- `Run StockDesk Server.bat` - starts the local app server
+- `data/stockdesk-db.json` - your current business data
+- `data/backups/` - your backup history
 
 ## Project structure
 
-```
-stockdesk/
-├── index.html              # App shell (HTML only)
-├── package.json            # Dependencies & scripts
-├── vite.config.js          # Build tool config
-├── src/
-│   ├── main.js             # Entry point — wires everything together
-│   ├── config/
-│   │   └── constants.js    # App name, currency, storage keys
-│   ├── store/
-│   │   └── database.js     # State + localStorage load/save/migrate
-│   ├── services/
-│   │   ├── parties.js      # Balance calculations
-│   │   ├── reports.js      # P&L and party statements
-│   │   ├── backup.js       # Export / import backup files
-│   │   ├── print.js        # Bill & statement printing
-│   │   └── trash.js        # Soft delete / restore logic
-│   ├── views/
-│   │   ├── home.js         # Dashboard
-│   │   ├── products.js     # Product CRUD
-│   │   ├── parties.js      # Customer / supplier CRUD
-│   │   ├── bills.js        # Sales & purchase billing
-│   │   ├── expenses.js
-│   │   ├── payments.js
-│   │   ├── reports.js
-│   │   └── trash.js
-│   ├── utils/
-│   │   ├── format.js       # money(), dates, CSV helpers
-│   │   └── ui.js           # Toast, modals, date filters
-│   └── styles/
-│       └── main.css        # All styles
-└── dist/                   # Built app (after npm run build)
+```text
+index.html
+package.json
+server.mjs
+src/
+data/
+  stockdesk-db.json
+  backups/
 ```
 
-This is a **proper modular codebase** — not one giant HTML file. Each file has one job.
+## First-time setup
 
-## Requirements
+The project already includes portable Node in `.tools/node`, so you can use the launcher without installing Node system-wide.
 
-- [Node.js 18+](https://nodejs.org/) (for development and building)
-- A modern browser (Chrome or Edge recommended)
+If `node_modules` is missing, the launcher installs dependencies automatically the first time.
 
-## Quick start (development)
+## Development
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open the URL shown in the terminal (usually `http://localhost:5173`).
-
-## Run locally without dev server (production build)
+## Production-style local server
 
 ```bash
-npm install
-npm run build
-npm run preview
+npm run start
 ```
 
-Or open `dist/index.html` after build — for best results use `npm run preview` which serves the built files correctly.
+Then open:
 
-> **Note:** The old “double-click one HTML file” workflow is replaced by a proper build step. This is standard for real projects and keeps code maintainable.
+`http://localhost:3210`
 
-## Features
+## Extra manual backup option
 
-- **Home** — Sale / Purchase / Expense quick actions + dashboard
-- **Products** — purchase + selling price, duplicate name block, stock alerts
-- **Parties** — customers & suppliers with running balance
-- **Sales / Purchases** — autocomplete products, both prices on bill, print receipt
-- **Expenses** — track business costs
-- **Payments In/Out** — money received / paid against parties
-- **Reports** — Profit/Loss and Party Statement (CSV + Print → PDF)
-- **Trash** — restore mistakenly deleted records
-- **Backup / Restore** — move all data to another PC via JSON file
+You can also manually copy these to another PC:
+- `data/stockdesk-db.json`
+- or any file from `data/backups/`
 
-## Data storage
+## GitHub
 
-All data is saved in the browser **localStorage** on this PC. Use **Backup** regularly.
+Repo:
 
-## Push to GitHub (myself7802)
-
-Remote: **https://github.com/myself7802/business-stock-management-app**
-
-### Step 1 — Create empty repo (one time)
-
-Open: [Create business-stock-management-app](https://github.com/new?name=business-stock-management-app)
-
-- **Public**
-- **Do not** add README, .gitignore, or license
-
-Click **Create repository**.
-
-### Step 2 — Push
-
-Double-click **`push-to-github.bat`** or run:
-
-```bash
-git push -u origin main
-```
-
-Live URL: **https://github.com/myself7802/business-stock-management-app**
-
-## License
-
-MIT — use freely for your business.
+`https://github.com/Myself7802/business-stock-management-app`

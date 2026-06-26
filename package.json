@@ -1,13 +1,20 @@
 {
   "name": "stockdesk",
-  "version": "2.0.0",
-  "description": "Local business & inventory manager — sales, purchases, expenses, reports",
+  "version": "2.1.0",
+  "description": "Local business & inventory manager with local file database",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "node server.mjs",
+    "test": "node scripts/test-qa.mjs && node scripts/test-app.mjs",
+    "test:unit": "node scripts/test-qa.mjs",
+    "test:integration": "node scripts/test-app.mjs"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
   },
   "devDependencies": {
     "vite": "^6.2.0"

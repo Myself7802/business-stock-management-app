@@ -5,7 +5,6 @@ import { esc, money } from "../utils/format.js";
 export function printBill(bill, type) {
   const party = db.parties.find((p) => p.id === bill.partyId);
   const isSale = type === "sale";
-
   const rows = bill.items
     .map((item) => {
       const price = isSale ? item.salePrice : item.costPrice;
@@ -15,7 +14,7 @@ export function printBill(bill, type) {
 
   document.getElementById("printArea").innerHTML = `
     <div style="text-align:center"><b>${APP_NAME}</b><br>${isSale ? "SALE" : "PURCHASE"} BILL #${bill.no}<br>${bill.date}</div>
-    <hr><b>Party:</b> ${esc(party?.name || "")}<br><br>
+    <hr><b>Party:</b> ${esc(party?.name || bill.partyName || "")}<br><br>
     <table style="width:100%;font-size:10px"><tr><th>Item</th><th>Qty</th><th>Rate</th><th>Amt</th></tr>${rows}</table>
     <hr><div style="text-align:right"><b>Total: ${money(bill.total)}</b><br>Paid: ${money(bill.paid || 0)}<br>Due: ${money(bill.total - (bill.paid || 0))}</div>
     ${bill.note ? `<br><small>Note: ${esc(bill.note)}</small>` : ""}`;

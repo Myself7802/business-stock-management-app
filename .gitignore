@@ -8,3 +8,8 @@ Thumbs.db
 .env.local
 .vscode/
 .idea/
+
+# Local business data — do not commit real records or auto-backups
+data/stockdesk-db.json
+data/backups/*
+!data/backups/.gitkeep

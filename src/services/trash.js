@@ -2,10 +2,9 @@ import * as db from "../store/database.js";
 import { saveAll, setTrash } from "../store/database.js";
 import { toast } from "../utils/ui.js";
 
-export function restoreFromTrash(trashId) {
+export async function restoreFromTrash(trashId) {
   const item = db.trash.find((t) => t.id === trashId);
   if (!item) return;
-
   const data = item.data;
 
   switch (item.kind) {
@@ -38,14 +37,14 @@ export function restoreFromTrash(trashId) {
   }
 
   setTrash(db.trash.filter((t) => t.id !== trashId));
-  saveAll();
+  await saveAll();
   toast("Restored.");
 }
 
-export function purgeFromTrash(trashId) {
+export async function purgeFromTrash(trashId) {
   if (!confirm("Delete forever? Cannot undo.")) return;
   setTrash(db.trash.filter((t) => t.id !== trashId));
-  saveAll();
+  await saveAll();
 }
 
 export function reverseBillStock(bill, type) {
